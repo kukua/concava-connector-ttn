@@ -1,0 +1,44 @@
+{
+  "name": "concava-connector-ttn",
+  "version": "0.1.0",
+  "description": "TTN MQTT connector for forwarding payloads to ConCaVa.",
+  "private": true,
+  "main": "lib/connector.js",
+  "scripts": {
+    "compile": "babel -d lib/ src/",
+    "start": "node lib/connector.js",
+    "client": "babel-node tools/client.js",
+    "lint": "eslint src/ && eslint tools/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "pre-commit": "lint",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kukua/concava-connector-ttn.git"
+  },
+  "author": "Kukua Team <dev@kukua.cc>",
+  "keywords": [
+    "concava",
+    "connector",
+    "mqtt",
+    "ttn",
+    "the things network"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kukua/concava-connector-ttn/issues"
+  },
+  "homepage": "https://github.com/kukua/concava-connector-ttn#readme",
+  "dependencies": {
+    "bunyan": "^1.8.0",
+    "mqtt": "^1.5.0",
+    "request": "^2.65.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.1.18",
+    "babel-preset-es2015": "^6.1.18",
+    "dotenv": "^2.0.0",
+    "eslint": "^2.8.0",
+    "pre-commit": "^1.1.2"
+  }
+}
