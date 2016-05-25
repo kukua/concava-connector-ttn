@@ -7,14 +7,14 @@
 The TTN MQTT connector can be run as a NodeJS program or in a Docker container.
 
 Make sure [ConCaVa](https://github.com/kukua/concava) is setup as well.
-See [`.env.sample`](https://github.com/kukua/concava-connector-ttn/tree/master/.env.sample) for the default configuration.
+See [`.env.example`](https://github.com/kukua/concava-connector-ttn/tree/master/.env.example) for the default configuration.
 
 ### NodeJS
 
 ```bash
 git clone https://github.com/kukua/concava-connector-ttn.git
 cd concava-connector-ttn
-cp .env.sample .env
+cp .env.example .env
 chmod 600 .env
 # > Edit .env
 
@@ -30,7 +30,7 @@ Tested with NodeJS v5.1
 First, [install Docker](http://docs.docker.com/engine/installation/). Then run:
 
 ```bash
-curl https://raw.githubusercontent.com/kukua/concava-connector-ttn/master/.env.sample > .env
+curl https://raw.githubusercontent.com/kukua/concava-connector-ttn/master/.env.example > .env
 chmod 600 .env
 # > Edit .env
 

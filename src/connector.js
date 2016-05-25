@@ -25,7 +25,8 @@ process.on('uncaughtException', (err) => {
 const url = process.env['CONCAVA_URL']
 const token = process.env['CONCAVA_AUTH_TOKEN']
 const ttnHost = process.env['TTN_HOST']
-const gatewayId = process.env['GATEWAY_ID']
+const ttnUser = process.env['TTN_USER']
+const ttnPassword = process.env['TTN_PASSWORD']
 const deviceIds = process.env['DEVICE_IDS'].split(',')
 const deviceIdPrefix = process.env['DEVICE_ID_PREFIX']
 
@@ -51,12 +52,13 @@ function send (deviceId, payload, cb) {
 }
 
 // Connect to TTN MQTT broker
-var client = mqtt.connect(ttnHost)
+var client = mqtt.connect(ttnHost, {
+	username: ttnUser,
+	password: ttnPassword
+})
 
 client.on('connect', () => {
 	log.info(`Connected to ${ttnHost}.`)
-
-	client.subscribe(`gateways/${gatewayId}/status`)
 
 	deviceIds.forEach((id) => {
 		client.subscribe(`nodes/${id}/packets`)
@@ -72,10 +74,7 @@ function getDeviceId (topic) {
 }
 
 client.on('message', (topic, message) => {
-	if (topic.startsWith('gateways/')) {
-		log.info({ type: 'gateway-status', status: message.toString() })
-		return
-	}
+	if ( ! topic.startsWith('nodes/')) return
 
 	let deviceId = getDeviceId(topic)
 	let payload = message.toString()
