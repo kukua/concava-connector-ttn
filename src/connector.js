@@ -27,7 +27,6 @@ const token = process.env['CONCAVA_AUTH_TOKEN']
 const ttnHost = process.env['TTN_HOST']
 const ttnUser = process.env['TTN_USER']
 const ttnPassword = process.env['TTN_PASSWORD']
-const deviceIds = process.env['DEVICE_IDS'].split(',')
 const deviceIdPrefix = process.env['DEVICE_ID_PREFIX']
 
 // Method for sending data to ConCaVa
@@ -60,31 +59,27 @@ var client = mqtt.connect(ttnHost, {
 client.on('connect', () => {
 	log.info(`Connected to ${ttnHost}.`)
 
-	deviceIds.forEach((id) => {
-		client.subscribe(`nodes/${id}/packets`)
-		log.info(`Subscribed to ${id}.`)
-	})
+	client.subscribe(`${ttnUser}/devices/+/up`)
 })
 
 function getDeviceId (topic) {
 	let parts = topic.split('/')
-	let id = ('' + parts[1]).toLowerCase()
-	if (id.length !== 8) return
-	return deviceIdPrefix.toLowerCase() + id
+	let id = ('' + parts[2]).toLowerCase()
+	if (id.startsWith('00000000')) {
+		return deviceIdPrefix.toLowerCase() + id.substr(8)
+	}
+	return id
 }
 
 client.on('message', (topic, message) => {
-	if ( ! topic.startsWith('nodes/')) return
-
+	let data = JSON.parse(message.toString())
 	let deviceId = getDeviceId(topic)
-	let payload = message.toString()
 
-	log.info({
-		type: 'publish', deviceId,
-		topic, payload
-	})
+	log.info({ type: 'payload', topic, deviceId, data })
 
 	if ( ! deviceId) return
+
+	var payload = new Buffer(data.payload, 'base64')
 
 	send(deviceId, payload, (err) => {
 		log.debug({ type: 'result', deviceId, err })
