@@ -35,7 +35,7 @@ chmod 600 .env
 # > Edit .env
 
 touch $PWD/ttn.log
-docker run -d -p 3333:3333 -p 5555:5555 \
+docker run -d \
 	-v $PWD/ttn.log:/tmp/output.log
 	--env-file .env --name ttn_connector \
 	kukuadev/concava-connector-ttn
