@@ -1,6 +1,6 @@
 {
   "name": "concava-connector-ttn",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TTN MQTT connector for forwarding payloads to ConCaVa.",
   "private": true,
   "main": "lib/connector.js",
