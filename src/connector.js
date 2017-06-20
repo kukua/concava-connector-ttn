@@ -1,4 +1,3 @@
-import fs from 'fs'
 import bunyan from 'bunyan'
 import ttn from 'ttn'
 import request from 'request'
@@ -29,8 +28,7 @@ const region = process.env['TTN_REGION']
 const appId = process.env['TTN_APP_ID']
 const accessKey = process.env['TTN_ACCESS_KEY']
 const options = {
-	protocol: 'mqtts',
-	ca: [ fs.readFileSync('mqtt-ca.pem') ],
+	protocol: 'mqtt',
 }
 
 // Method for sending data to ConCaVa
