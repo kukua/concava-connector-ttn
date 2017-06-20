@@ -51,4 +51,4 @@ Your help and feedback are highly appreciated!
 
 This software is licensed under the [MIT license](https://github.com/kukua/concava-connector-ttn/blob/master/LICENSE).
 
-© 2016 Kukua BV
+© 2017 Kukua BV

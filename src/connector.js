@@ -1,5 +1,6 @@
+import fs from 'fs'
 import bunyan from 'bunyan'
-import mqtt from 'mqtt'
+import ttn from 'ttn'
 import request from 'request'
 
 // Try loading dotfile (for local development)
@@ -24,14 +25,17 @@ process.on('uncaughtException', (err) => {
 // Configuration
 const url = process.env['CONCAVA_URL']
 const token = process.env['CONCAVA_AUTH_TOKEN']
-const ttnHost = process.env['TTN_HOST']
-const ttnUser = process.env['TTN_USER']
-const ttnPassword = process.env['TTN_PASSWORD']
-const deviceIdPrefix = process.env['DEVICE_ID_PREFIX']
+const region = process.env['TTN_REGION']
+const appId = process.env['TTN_APP_ID']
+const accessKey = process.env['TTN_ACCESS_KEY']
+const options = {
+	protocol: 'mqtts',
+	ca: [ fs.readFileSync('mqtt-ca.pem') ],
+}
 
 // Method for sending data to ConCaVa
 function send (deviceId, payload, cb) {
-	// global: url, token
+	// Global: request, url, token
 	request.post({
 		url,
 		body: Buffer.concat([new Buffer(deviceId, 'hex'), payload]),
@@ -51,37 +55,20 @@ function send (deviceId, payload, cb) {
 }
 
 // Connect to TTN MQTT broker
-var client = mqtt.connect(ttnHost, {
-	username: ttnUser,
-	password: ttnPassword
-})
+const client = new ttn.data.MQTT(region, appId, accessKey, options)
 
 client.on('connect', () => {
-	log.info(`Connected to ${ttnHost}.`)
-
-	client.subscribe(`${ttnUser}/devices/+/up`)
+	log.info(`Connected to application ${appId} in ${region.toUpperCase()}.`)
 })
 
-function getDeviceId (topic) {
-	let parts = topic.split('/')
-	let id = ('' + parts[2]).toLowerCase()
-	if (id.startsWith('00000000')) {
-		return deviceIdPrefix.toLowerCase() + id.substr(8)
-	}
-	return id
-}
+client.on('error', (err) => {
+	log.error(err)
+})
 
-client.on('message', (topic, message) => {
-	let data = JSON.parse(message.toString())
-	let deviceId = getDeviceId(topic)
+client.on('message', (deviceId, data) => {
+	log.info({ type: 'payload', deviceId, data })
 
-	log.info({ type: 'payload', topic, deviceId, data })
-
-	if ( ! deviceId) return
-
-	var payload = new Buffer(data.payload, 'base64')
-
-	send(deviceId, payload, (err) => {
+	send(data.hardware_serial, data.payload_raw, (err) => {
 		log.debug({ type: 'result', deviceId, err })
 	})
 })
